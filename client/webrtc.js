@@ -1,3 +1,7 @@
+// PASTE YOUR API KEY OBTAINED FROM METERED/OPENRELAY TURN SERVER DASHBOARD AT https://dashboard.metered.ca
+var API_KEY = ""; 
+
+
 var localVideo;
 var localStream;
 var remoteVideo;
@@ -5,12 +9,14 @@ var peerConnection;
 var uuid;
 var serverConnection;
 
-var peerConnectionConfig = {
-  'iceServers': [
-    {'urls': 'stun:stun.stunprotocol.org:3478'},
-    {'urls': 'stun:stun.l.google.com:19302'},
-  ]
-};
+var peerConnectionConfig = {};
+
+// Code to fetch the iceServers array
+(async () => {
+  const response = await fetch(`https://yourappname.metered.live/api/v1/credentials?apiKey=${API_KEY}`);
+  const iceServers = await response.json();
+  peerConnectionConfig.iceServers = iceServers;
+})();
 
 function pageReady() {
   uuid = createUUID();
