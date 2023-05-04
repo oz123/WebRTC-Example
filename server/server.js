@@ -33,24 +33,25 @@ httpsServer.listen(HTTPS_PORT, '0.0.0.0');
 // ----------------------------------------------------------------------------------------
 
 // Create a server for handling websocket calls
-const wss = new WebSocketServer({server: httpsServer});
-
-wss.on('connection', function(ws) {
-  ws.on('message', function(message) {
-    // Broadcast any received message to all clients
-    console.log('received: %s', message);
-    wss.broadcast(message);
-  });
-});
-
-wss.broadcast = function(data) {
-  this.clients.forEach(function(client) {
-    if(client.readyState === WebSocket.OPEN) {
-      client.send(data);
-    }
-  });
-};
-
+//const wss = new WebSocketServer({server: httpsServer});
+//const wss = new WebSocketServer({port: 19999});
+//
+//wss.on('connection', function(ws) {
+//  ws.on('message', function(message) {
+//    // Broadcast any received message to all clients
+//    console.log('received: %s', message);
+//    wss.broadcast(message);
+//  });
+//});
+//
+//wss.broadcast = function(data) {
+//  this.clients.forEach(function(client) {
+//    if(client.readyState === WebSocket.OPEN) {
+//      client.send(data);
+//    }
+//  });
+//};
+//
 console.log('Server running. Visit https://localhost:' + HTTPS_PORT + ' in Firefox/Chrome.\n\n\
 Some important notes:\n\
   * Note the HTTPS; there is no HTTP -> HTTPS redirect.\n\
