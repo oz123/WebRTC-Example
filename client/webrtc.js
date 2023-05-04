@@ -24,7 +24,7 @@ function pageReady() {
   localVideo = document.getElementById('localVideo');
   remoteVideo = document.getElementById('remoteVideo');
 
-  serverConnection = new WebSocket('wss://' + window.location.hostname + ':8443');
+  serverConnection = new WebSocket('wss://' + window.location.hostname + ':30881');
   serverConnection.onmessage = gotMessageFromServer;
 
   var constraints = {
@@ -55,25 +55,33 @@ function start(isCaller) {
   }
 }
 
+
 function gotMessageFromServer(message) {
   if(!peerConnection) start(false);
 
-  var signal = JSON.parse(message.data);
+  console.log(message.data.text())
 
-  // Ignore messages from ourself
-  if(signal.uuid == uuid) return;
+  var signal;
+  message.data.text().then(function(result) {
+    //console.log(result)
+    signal = JSON.parse(result)
+    console.log(signal)
 
-  if(signal.sdp) {
-    peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
-      // Only create answers in response to offers
-      if(signal.sdp.type == 'offer') {
-        peerConnection.createAnswer().then(createdDescription).catch(errorHandler);
-      }
-    }).catch(errorHandler);
-  } else if(signal.ice) {
-    peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
-  }
-}
+    // Ignore messages from ourself
+    if(signal.uuid == uuid) return;
+
+    if(signal.sdp) {
+      peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
+        // Only create answers in response to offers
+        if(signal.sdp.type == 'offer') {
+          peerConnection.createAnswer().then(createdDescription).catch(errorHandler);
+        }
+      }).catch(errorHandler);
+    } else if(signal.ice) {
+      peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
+    }
+
+  });
 
 function gotIceCandidate(event) {
   if(event.candidate != null) {
