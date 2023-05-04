@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webrtc-example
+  labels:
+    app: webrtc-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webrtc-example
+  template:
+    metadata:
+      labels:
+        app: webrtc-example
+    spec:
+      containers:
+      - name: https
+        image: docker.io/ozspectro/webrtc-example:0.2.1
+        ports:
+        - containerPort: 8443
+          name: https
+        command:
+        - npm 
+        - start 
+      - name: wss-broadcast
+        image: docker.io/ozspectro/webrtc-example:0.2.1
+        ports:
+        - containerPort: 18443
+          name: websocket
+        command:
+        - npm 
+        - run
+        - broad
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: webrtc-example
+spec:
+  selector:
+    app: webrtc-example
+  ports:
+  - protocol: TCP
+    port: 8443
+    name: https
+    targetPort: 8443
+    nodePort: 30880
+  - protocol: TCP
+    targetPort: 18443
+    port: 18443
+    name: websocket
+    nodePort: 30881
+  type: NodePort
+  externalTrafficPolicy: Local
